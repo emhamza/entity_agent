@@ -92,6 +92,18 @@ graph_builder.add_edge("entity_mapper", END)
 #compile the graph
 graph = graph_builder.compile()
 
+#saving the graph image in the dir
+print("\nGenerating graph image")
+try:
+    image_bytes = graph.get_graph().draw_mermaid_png()
+    image_path = "entity_agent.png"
+    with open(image_path, "wb") as f:
+        f.write(image_bytes)
+        print(f"📊 Graph image saved to: {os.path.abspath(image_path)}")
+except Exception as e:
+    print("⚠️ Could not save graph image:", str(e))
+
+#static input for now
 original_product_fields  = {
     "product_name": {
       "description": "Name of the product",
