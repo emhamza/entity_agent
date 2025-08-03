@@ -38,6 +38,8 @@ promt_template = ChatPromptTemplate.from_messages([
      """
     You are an expert Entity Agent tasked with intelligently mapping field from incoming JSON data to a pre-defined original product field mapping.
 
+    Your goal is to find the best matching original fields for each incoming field. For each incoming field, you must return **up to 3 best-fit original fields**. **If fewer than three good matches are found, return only the available ones.**
+
     You goal is to find best matching original fields for each incoming field, you must return up to 3 best-fit original fields along with a confidence score (a float between 0.0 and 1.0) for each match. The confidence score should reflect how well the field name and its content match the original field.
 
     Here is the incoming JSON data:
@@ -48,7 +50,7 @@ promt_template = ChatPromptTemplate.from_messages([
 
     Your final output must be a JSON array where each object contains:
     - "incoming_field": The name of the  field from the incoming data.
-    - "best_matches": A list of upto three objects, each with "original_field" and "confidence_score".
+    - "best_matches": A list of up to 3 objects, each with "original_field" and "confidence_score".
     """),
     ("user", "Please map the incoming JSON field to the original field mapping and return the resutls in the specified JSON format."),
 ])
@@ -103,6 +105,10 @@ original_product_fields  = {
       "description": "Detailed description of the product",
       "type": "string"
     },
+    "details": {
+      "description": "Detailed description of the product",
+      "type": "string"
+    },
     "created_at": {
       "description": "Timestamp when the product was created",
       "type": "datetime"
@@ -112,6 +118,10 @@ original_product_fields  = {
       "type": "datetime"
     },
     "price": {
+      "description": "Retail price of the product",
+      "type": "float"
+    },
+    "value": {
       "description": "Retail price of the product",
       "type": "float"
     }
