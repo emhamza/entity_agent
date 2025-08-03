@@ -4,6 +4,7 @@ import getpass
 from dotenv import load_dotenv
 
 
+
 #helper function to set enviroment variables
 def _set_env(var: str):
     if not os.environ.get(var):
@@ -12,3 +13,5 @@ def _set_env(var: str):
 #load the enviroment variable
 load_dotenv()
 _set_env("GOOGLE_API_KEY")
+
+
