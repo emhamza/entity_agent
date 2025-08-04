@@ -11,7 +11,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 import json
 from langgraph.graph import StateGraph, START, END
 
-#function to load the json data
+#heler function to load the json data
 def load_json_data(file_path):
     """Loads and return data froma JSON file."""
     with open(file_path, 'r') as f:
@@ -55,6 +55,68 @@ promt_template = ChatPromptTemplate.from_messages([
 
     You goal is to find best matching original fields for each incoming field, you must return up to 3 best-fit original fields along with a confidence score (a float between 0.0 and 1.0) for each match. The confidence score should reflect how well the field name and its content match the original field.
 
+    ***Example 1:
+    incoming JSON data:
+    [{"item_name": "Wrist Watch"}]
+
+    original field mapping:
+    {"product_name": {"description": "Name of the product"}}
+
+    Expected Output:
+    [
+      {
+        "incoming_field": "item_name",
+        "best_matches" : [
+          {
+            "original_field": "product_name",
+            "confidence_score": 0.95
+          }
+        ]
+      }
+    ]
+    ***
+    ***Example 2:
+    incoming JSON data:
+    [{"product_date": "2025-01-01"}]
+
+    original field mapping:
+    {"created_at": {"description": "Timestamp when the product was created"}, "manufactured_at": {"description": "Date of manufacture"}}
+
+    Expected Output:
+    [
+      {
+        "incoming_field": "product_date",
+        "best_matches" : [
+          {
+            "original_field": "created_at",
+            "confidence_score": 0.85
+          },
+          {
+            "original_field": "manufactured_at",
+            "confidence_score": 0.82
+          }
+        ]
+      }
+    ]
+    ***
+    ***Example 3:
+    incoming JSON data:
+    [{"shipping_cost": "4.99"}]
+
+    original field mapping:
+    {"product_name": {"description": "Name of the product"}, "price": {"description": "Retail price of the product"}}
+
+    Expected Output:
+    [
+      {
+        "incoming_field": "shipping_cost",
+        "best_matches" : []
+      }
+    ]
+    ***
+
+    Now perform the mapping on the real data below:
+    
     Here is the incoming JSON data:
     {incoming_data}
 
