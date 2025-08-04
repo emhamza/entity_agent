@@ -11,6 +11,13 @@ from langchain_core.messages import HumanMessage, AIMessage
 import json
 from langgraph.graph import StateGraph, START, END
 
+#function to load the json data
+def load_json_data(file_path):
+    """Loads and return data froma JSON file."""
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    return data
+
 #helper function to set enviroment variables
 def _set_env(var: str):
     if not os.environ.get(var):
@@ -22,6 +29,12 @@ _set_env("GOOGLE_API_KEY")
 
 #initialize the llm chat model
 llm = init_chat_model("google_genai:gemini-2.0-flash")
+
+#load the data from  the external JSON file
+current_dir = os.path.dirname(os.path.abspath(__file__))
+json_file_path = os.path.join(current_dir, 'db', "incomingData.json")
+
+
 
 #Defining entity agent state, allow the agent to access and proccess the coming information at different stages
 class EntityAgentState(TypedDict):
@@ -113,6 +126,14 @@ original_product_fields  = {
       "description": "Name of the product entity",
       "type": "string"
     },
+    "field_name": {
+      "description": "Name of the field entity",
+      "type": "string"
+    },
+    "tag_name": {
+      "description": "Name of the tag name",
+      "type": "string"
+    },
     "description": {
       "description": "Detailed description of the product",
       "type": "string"
@@ -138,14 +159,13 @@ original_product_fields  = {
       "type": "float"
     }
   }
-incoming_product_data =  [
-    {
-      "p_name": "Ultra Bottle",
-      "desc": "High quality stainless steel bottle",
-      "createdOn": "2023-04-12T10:00:00Z",
-      "cost": 19.99
-    }
-  ]
+
+#assigning the loaded json to the variable
+try:
+    incoming_product_data = load_json_data(json_file_path)
+except FileNotFoundError:
+    print(f"Error: incomingData.json not found at {json_file_path}")
+    exit()
 
 #invoke the graph with the initialize state
 initial_state = {
