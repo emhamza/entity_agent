@@ -1,9 +1,34 @@
 [
   {
-    "p_name": "Ultra Bottle",
-    "desc": "High quality stainless steel bottle",
-    "createdOn": "2023-04-12T10:00:00Z",
-    "cost": 19.99,
-    "product_id": 1
+    "product_id": 1,
+    "item_title": "Eco-Friendly Water Bottle",
+    "item_description": "A durable, BPA-free stainless steel bottle with a vacuum-sealed lid to keep drinks cold for 24 hours.",
+    "launch_date": "2024-06-15T08:30:00Z",
+    "price_usd": 25.5,
+    "in_stock": true,
+    "tags": ["reusable", "hydration", "sustainable"],
+    "dimensions": {
+      "height": "25 cm",
+      "width": "8 cm"
+    }
+  },
+  {
+    "product_id": 2,
+    "p_name": "Premium Leather Wallet",
+    "desc": "Handcrafted wallet with multiple card slots and a dedicated coin pouch.",
+    "registered_on": "2023-11-20T14:00:00Z",
+    "cost": 49.99,
+    "in_stock": false,
+    "tags": ["accessory", "leather", "wallet"],
+    "color": "brown"
+  },
+  {
+    "product_id": 3,
+    "p_name": "Ultra-Fast Charger",
+    "desc": "Compact 65W charger for laptops and smartphones.",
+    "manufactured_on": "2024-01-10T09:00:00Z",
+    "price_cad": 79.0,
+    "is_available": true,
+    "tags": ["electronics", "charger", "fast-charging"]
   }
 ]
