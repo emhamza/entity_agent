@@ -11,6 +11,13 @@ from langchain_core.messages import HumanMessage, AIMessage
 import json
 from langgraph.graph import StateGraph, START, END
 
+#heler function to load the json data
+def load_json_data(file_path):
+    """Loads and return data froma JSON file."""
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    return data
+
 #helper function to set enviroment variables
 def _set_env(var: str):
     if not os.environ.get(var):
@@ -22,6 +29,12 @@ _set_env("GOOGLE_API_KEY")
 
 #initialize the llm chat model
 llm = init_chat_model("google_genai:gemini-2.0-flash")
+
+#load the data from  the external JSON file
+current_dir = os.path.dirname(os.path.abspath(__file__))
+json_file_path = os.path.join(current_dir, 'db', "incomingData.json")
+
+
 
 #Defining entity agent state, allow the agent to access and proccess the coming information at different stages
 class EntityAgentState(TypedDict):
@@ -41,6 +54,70 @@ promt_template = ChatPromptTemplate.from_messages([
     Your goal is to find the best matching original fields for each incoming field. For each incoming field, you must return **up to 3 best-fit original fields**. **If fewer than three good matches are found, return only the available ones.**
 
     You goal is to find best matching original fields for each incoming field, you must return up to 3 best-fit original fields along with a confidence score (a float between 0.0 and 1.0) for each match. The confidence score should reflect how well the field name and its content match the original field.
+
+    Here are few example to guide you
+
+    ***Example 1:
+    incoming JSON data:
+    [{{"item_name": "Wrist Watch"}}]
+
+    original field mapping:
+    {{"product_name": {{"description": "Name of the product"}}}}
+
+    Expected Output:
+    [
+      {{
+        "incoming_field": "item_name",
+        "best_matches" : [
+          {{
+            "original_field": "product_name",
+            "confidence_score": 0.95
+          }}
+        ]
+      }}
+    ]
+    ***
+    ***Example 2:
+    incoming JSON data:
+    [{{"product_date": "2025-01-01"}}]
+
+    original field mapping:
+   {{"created_at": {{"description": "Timestamp when the product was created"}}, "manufactured_at": {{"description": "Date of manufacture"}}}}
+
+    Expected Output:
+    [
+      {{
+        "incoming_field": "product_date",
+        "best_matches" : [
+          {{
+            "original_field": "created_at",
+            "confidence_score": 0.85
+          }},
+          {{
+            "original_field": "manufactured_at",
+            "confidence_score": 0.82
+          }}
+        ]
+      }}
+    ]
+    ***
+    ***Example 3:
+    incoming JSON data:
+    [{{"shipping_cost": "4.99"}}]
+
+    original field mapping:
+    {{"product_name": {{"description": "Name of the product"}}, "price": {{"description": "Retail price of the product"}}}}
+
+    Expected Output:
+    [
+      {{
+        "incoming_field": "shipping_cost",
+        "best_matches" : []
+      }}
+    ]
+    ***
+
+    Now perform the mapping on the real data below:
 
     Here is the incoming JSON data:
     {incoming_data}
@@ -113,12 +190,20 @@ original_product_fields  = {
       "description": "Name of the product entity",
       "type": "string"
     },
+    "field_name": {
+      "description": "Name of the field name",
+      "type": "string"
+    },
+    "tag_name": {
+      "description": "Name of the tag name",
+      "type": "string"
+    },
     "description": {
       "description": "Detailed description of the product",
       "type": "string"
     },
     "details": {
-      "description": "Detailed description of the product",
+      "description": "Detailes of the product",
       "type": "string"
     },
     "created_at": {
@@ -138,14 +223,13 @@ original_product_fields  = {
       "type": "float"
     }
   }
-incoming_product_data =  [
-    {
-      "p_name": "Ultra Bottle",
-      "desc": "High quality stainless steel bottle",
-      "createdOn": "2023-04-12T10:00:00Z",
-      "cost": 19.99
-    }
-  ]
+
+#assigning the loaded json to the variable
+try:
+    incoming_product_data = load_json_data(json_file_path)
+except FileNotFoundError:
+    print(f"Error: incomingData.json not found at {json_file_path}")
+    exit()
 
 #invoke the graph with the initialize state
 initial_state = {
